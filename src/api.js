@@ -33,3 +33,13 @@ export const deleteUser = async (id) => {
     return false;
   }
 };
+
+export const updateUser = async (id, user) => {
+  try {
+    const response = await axios.put(`${API_URL}/${id}`, user);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return null;
+  }
+};
