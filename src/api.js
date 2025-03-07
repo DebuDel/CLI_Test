@@ -36,10 +36,16 @@ export const deleteUser = async (id) => {
 
 export const updateUser = async (id, user) => {
   try {
-    const response = await axios.put(`${API_URL}/${id}`, user);
+    const response = await axios.put(`${API_URL}/users/${id}`, user);
     return response.data;
   } catch (error) {
-    console.error("Error updating user:", error);
+    if (error.response) {
+      console.error("Error updating user:", error.response.data.message);
+    } else if (error.request) {
+      console.error("Error updating user: No response received");
+    } else {
+      console.error("Error updating user:", error.message);
+    }
     return null;
   }
 };
