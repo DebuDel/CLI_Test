@@ -53,10 +53,10 @@ class UserController extends Controller
 
 
     public function update(Request $request, $id)
-    {   
+    {
         $request->validate([
-            'firstname' => 'required',
-            'lastname' => 'required',
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
         ]);
 
         $user = User::find($id);
@@ -65,23 +65,25 @@ class UserController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $firstname = strtolower($request->firstname);
-        $lastname = strtolower($request->lastname);
+        $firstname = $request->firstname;
+        $lastname = $request->lastname;
 
+        $lowercaseFirstname = strtolower($firstname);
+        $lowercaseLastname = strtolower($lastname);
 
-        $existingUser = User::whereRaw('LOWER(firstname) = ? AND LOWER(lastname) = ?', [$firstname, $lastname])
+        $existingUser = User::whereRaw('LOWER(firstname) = ? AND LOWER(lastname) = ?', [$lowercaseFirstname, $lowercaseLastname])
                             ->where('id', '!=', $id)
                             ->first();
-        //avoid duplicate names on db
+
         if ($existingUser) {
             return response()->json(['message' => 'User already exists'], 409);
         }
-                            
+
         $user->update([
-            'firstname' => $request->firstname,
-            'lastname' => $request->lastname,
+            'firstname' => $firstname,
+            'lastname' => $lastname,
         ]);
 
-        return response()->json($user);
+        return response()->json($user, 200);
     }
 }
